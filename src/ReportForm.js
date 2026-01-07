@@ -15,11 +15,15 @@ function ReportForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("/api/reports", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    const res = await fetch(
+  "https://street-dog-rescue-server.onrender.com/api/reports",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  }
+);
+
 
     res.ok
       ? alert("✅ Report submitted successfully")
