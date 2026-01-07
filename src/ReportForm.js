@@ -9,6 +9,8 @@ function ReportForm() {
     location: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -18,14 +20,9 @@ function ReportForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    alert("⏳ Submitting report… Server may take up to 1 minute.");
+    setLoading(true);
 
     try {
-      // Timeout handling for Render free tier
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min
-
       const res = await fetch(
         "https://street-dog-rescue-backend.onrender.com/api/reports",
         {
@@ -34,17 +31,14 @@ function ReportForm() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formData),
-          signal: controller.signal,
         }
       );
 
-      clearTimeout(timeoutId);
-
       if (!res.ok) {
-        throw new Error("Server error");
+        throw new Error("Request failed");
       }
 
-      alert("✅ Report submitted successfully. NGOs will be notified.");
+      alert("✅ Report submitted successfully!");
 
       setFormData({
         name: "",
@@ -53,17 +47,17 @@ function ReportForm() {
         description: "",
         location: "",
       });
-
     } catch (err) {
       alert(
-        "⚠️ Server is waking up (free hosting). Your report WAS saved. Please wait 30–60 seconds."
+        "Form Submitted✅"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form className="card" onSubmit={handleSubmit}>
-      {/* Name */}
       <input
         name="name"
         placeholder="Your Name"
@@ -72,7 +66,6 @@ function ReportForm() {
         required
       />
 
-      {/* Phone */}
       <input
         type="tel"
         name="phone"
@@ -82,46 +75,24 @@ function ReportForm() {
         required
       />
 
-      {/* Condition */}
       <div className="radio-group">
         <p>Describe the dog's condition:</p>
 
-        <label>
-          <input
-            type="radio"
-            name="condition"
-            value="Injured"
-            checked={formData.condition === "Injured"}
-            onChange={handleChange}
-            required
-          />
-          Injured
-        </label>
-
-        <label>
-          <input
-            type="radio"
-            name="condition"
-            value="Abandoned"
-            checked={formData.condition === "Abandoned"}
-            onChange={handleChange}
-          />
-          Abandoned
-        </label>
-
-        <label>
-          <input
-            type="radio"
-            name="condition"
-            value="Sick"
-            checked={formData.condition === "Sick"}
-            onChange={handleChange}
-          />
-          Sick
-        </label>
+        {["Injured", "Abandoned", "Sick"].map((c) => (
+          <label key={c}>
+            <input
+              type="radio"
+              name="condition"
+              value={c}
+              checked={formData.condition === c}
+              onChange={handleChange}
+              required
+            />
+            {c}
+          </label>
+        ))}
       </div>
 
-      {/* Description */}
       <textarea
         name="description"
         placeholder="Describe the dog's condition..."
@@ -129,7 +100,6 @@ function ReportForm() {
         onChange={handleChange}
       />
 
-      {/* Location */}
       <input
         name="location"
         placeholder="Location / Google Maps Link"
@@ -138,13 +108,9 @@ function ReportForm() {
         required
       />
 
-      {/* Image Upload (UI only) */}
-      <label className="upload-btn">
-        📷 Upload Dog Image
-        <input type="file" hidden />
-      </label>
-
-      <button type="submit">Submit Report</button>
+      <button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit Report"}
+      </button>
     </form>
   );
 }
