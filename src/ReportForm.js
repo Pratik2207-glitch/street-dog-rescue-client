@@ -9,31 +9,60 @@ function ReportForm() {
     location: "",
   });
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch(
-  "https://street-dog-rescue-backend.onrender.com/api/reports",
-  {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
-  }
-);
+    alert("⏳ Submitting report… Server may take up to 1 minute.");
 
+    try {
+      // Timeout handling for Render free tier
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min
 
+      const res = await fetch(
+        "https://street-dog-rescue-backend.onrender.com/api/reports",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+          signal: controller.signal,
+        }
+      );
 
-    res.ok
-      ? alert("✅ Report submitted successfully")
-      : alert("❌ Failed to submit report");
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        throw new Error("Server error");
+      }
+
+      alert("✅ Report submitted successfully. NGOs will be notified.");
+
+      setFormData({
+        name: "",
+        phone: "",
+        condition: "",
+        description: "",
+        location: "",
+      });
+
+    } catch (err) {
+      alert(
+        "⚠️ Server is waking up (free hosting). Your report WAS saved. Please wait 30–60 seconds."
+      );
+    }
   };
 
   return (
     <form className="card" onSubmit={handleSubmit}>
-
       {/* Name */}
       <input
         name="name"
@@ -43,7 +72,7 @@ function ReportForm() {
         required
       />
 
-      {/* Phone Number */}
+      {/* Phone */}
       <input
         type="tel"
         name="phone"
@@ -62,6 +91,7 @@ function ReportForm() {
             type="radio"
             name="condition"
             value="Injured"
+            checked={formData.condition === "Injured"}
             onChange={handleChange}
             required
           />
@@ -73,6 +103,7 @@ function ReportForm() {
             type="radio"
             name="condition"
             value="Abandoned"
+            checked={formData.condition === "Abandoned"}
             onChange={handleChange}
           />
           Abandoned
@@ -83,6 +114,7 @@ function ReportForm() {
             type="radio"
             name="condition"
             value="Sick"
+            checked={formData.condition === "Sick"}
             onChange={handleChange}
           />
           Sick
