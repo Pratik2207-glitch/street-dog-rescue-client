@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ReportForm from "./ReportForm";
 import "./App.css";
 
@@ -9,10 +9,10 @@ import centerVideo from "./assets/dog-center.mp4";
 import rightVideo from "./assets/dog-right.mp4";
 
 function App() {
-  const [dark, setDark] = useState(false);
 
   return (
-    <div className={dark ? "app dark" : "app"}>
+    <div className="app">
+
 
       {/* ===== Creator Box (Pinned) ===== */}
       <div className="creator-box">
