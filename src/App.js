@@ -2,7 +2,7 @@ import React from "react";
 import ReportForm from "./ReportForm";
 import "./App.css";
 
-import profilePic from "./assets/pratik.jpg";
+import profilePic from "./assets/vaishu.jpg";
 
 import leftVideo from "./assets/dog-left.mp4";
 import centerVideo from "./assets/dog-center.mp4";
@@ -18,12 +18,12 @@ function App() {
       <div className="creator-box">
         <img
           src={profilePic}
-          alt="Pratik Kumar"
+          alt="Vaishnavi Vashishth"
           className="creator-img"
         />
         <div>
-          <strong>Pratik Kumar</strong><br />
-          <span>kumarpratikpandey87@gmail.com</span>
+          <strong>Vaishnavi Vashishth</strong><br />
+          <span>vaishnavivashishth53@gmail.com</span>
         </div>
       </div>
       
